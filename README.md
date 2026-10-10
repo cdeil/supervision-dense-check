@@ -1,6 +1,6 @@
 # Supervision dense check
 
-**[Interactive before/after demo](https://cdeil.github.io/supervision-dense-check/)** · [Proposed patch](https://github.com/roboflow/supervision/compare/0802a0e79ae097bfaad45a65f94cba9a2ae2a1c2...cdeil:supervision:feat/dense-map-cap) · [Unsubmitted PR text](upstream-pr.md)
+**[Interactive before/after demo](https://cdeil.github.io/supervision-dense-check/)** · [Supervision PR #2716](https://github.com/roboflow/supervision/pull/2716)
 
 Perfect detections can receive low COCO AP in dense scenes: evaluation retains at most **100 predictions per image and category**, even when every supplied box is correct. That default is appropriate for the standard COCO benchmark. This check demonstrates an optional larger cap for counting/dense-scene evaluation, keeping the default unchanged.
 
@@ -64,4 +64,4 @@ Other evaluators already expose comparable configuration:
 
 A caller wrapping Supervision would need to expose and forward this option to make it user-selectable. No data-loader change is needed. A hosted platform would need its own supported configuration and clear score labels; changing the open-source evaluator alone cannot change a separate hosted evaluation service.
 
-This repository and its Pages deployment are independent of other reproduction repositories. The upstream PR has **not been submitted**; its proposed description is available for review in [upstream-pr.md](upstream-pr.md).
+The proposed API, implementation and discussion are in [Supervision PR #2716](https://github.com/roboflow/supervision/pull/2716).
