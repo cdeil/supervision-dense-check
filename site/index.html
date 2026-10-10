@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perfect detections. Low AP? — Supervision dense check</title>
+<meta name="description" content="A reproducible before/after check: make Supervision's COCO prediction cap configurable for dense scenes.">
+<link rel="stylesheet" href="style.css"><script defer src="app.js"></script>
+</head>
+<body><main>
+<header><div><span class="eyebrow">SUPERVISION · DENSE SCENE CHECK</span><h1>Perfect detections. Low AP?</h1><p>Same image. Same detections. Only the evaluation cap changes.</p></div><a class="source" href="https://github.com/cdeil/supervision-dense-check">Source ↗</a></header>
+<section class="controls" aria-label="Scene settings">
+<fieldset><legend>Objects per image</legend><div id="counts"></div></fieldset>
+<fieldset><legend>Categories</legend><select id="classes" aria-label="Categories"><option value="1">1 class</option><option value="10">10 classes</option></select></fieldset>
+<fieldset><legend>Detector</legend><select id="missing" aria-label="Detector quality"><option value="false">Find every star</option><option value="true">Miss every 10th star</option></select></fieldset>
+<fieldset><legend>Proposed AP cap</legend><select id="cap" aria-label="Proposed AP cap"><option>100</option><option>300</option><option selected>1000</option></select></fieldset>
+</section>
+<div id="status" class="status" aria-live="polite">Loading verified Python results…</div>
+<section class="comparison" aria-label="Before and after evaluation">
+<article><div class="panel-head"><div><span class="eyebrow">BEFORE · RELEASED 0.30.9</span><h2>Fixed cap: 100</h2></div><div class="score"><strong id="before-score">—</strong><span>AP50–95</span></div></div><canvas id="before" width="1024" height="768" aria-label="Image with predictions scored under the default cap"></canvas><p id="before-detail" class="detail"></p></article>
+<article><div class="panel-head"><div><span class="eyebrow">AFTER · PROPOSED CHANGE</span><h2 id="after-title">Selected cap: 1,000</h2></div><div class="score"><strong id="after-score">—</strong><span>AP50–95</span></div></div><canvas id="after" width="1024" height="768" aria-label="Same image with predictions scored under the selected cap"></canvas><p id="after-detail" class="detail"></p></article>
+</section>
+<div class="legend"><span><i class="green"></i>Prediction enters matching</span><span><i class="orange"></i>Prediction excluded by cap</span><span><i class="gray"></i>Missed ground truth</span><span id="ap50"></span></div>
+<section class="explanation"><div><h3>The proposed API</h3><pre><code>MeanAveragePrecision(
+    max_detection_thresholds=(1, 10, 1000)
+)</code></pre><p>Keep <code>(1, 10, 100)</code> as the default. Opt in to a larger limit for dense scenes.</p></div><div><h3>What is being limited?</h3><p>The highest-confidence predictions <b>per image and category</b> enter matching. Ground truths stay uncapped. Ten classes of 100 stars each therefore fit the default; class-agnostic evaluation merges them into one capped class.</p><p>Changing the cap changes the metric. Label custom AP separately from standard COCO AP@100.</p></div></section>
+<details><summary>Reproduction, controls &amp; precedent</summary><p>A deterministic connected-component toy detector reads the rendered pixels. It uses no labels, weights or hosted inference. The miss control deliberately removes every tenth prediction. Raising the cap does not recover missed objects.</p><p>Python evaluates 20 scenes/controls with released and patched Supervision in separately pinned uv environments. All 80 evaluations agree with pycocotools at the same cap. JavaScript only displays those measured results.</p><p>COCO AP samples 101 recall points; the default result for 1,000 perfect boxes is 11/101 ≈ 10.89%, rather than exactly 10%.</p><p>Existing configurable limits: <a href="https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py">pycocotools maxDets</a> · <a href="https://lightning.ai/docs/torchmetrics/stable/detection/mean_average_precision.html">TorchMetrics max_detection_thresholds</a> · <a href="https://github.com/roboflow/rf-detr/blob/develop/src/rfdetr/config.py">RF-DETR eval_max_dets</a>.</p><p id="versions"></p></details>
+<footer><a href="https://github.com/cdeil/supervision-dense-check#reproduce">Run with uv</a><a href="https://github.com/roboflow/supervision/compare/develop...cdeil:supervision:feat/dense-map-cap">Proposed diff</a><a href="https://github.com/cdeil/supervision-dense-check/blob/main/upstream-pr.md">PR text for review</a><a href="results.json">Measured results (JSON)</a><span>Independent check · no upstream PR submitted</span></footer>
+<noscript>This comparison needs JavaScript to display precomputed metrics. <a href="results.json">Read the results as JSON.</a></noscript>
+</main></body></html>

@@ -1,0 +1,25 @@
+[project]
+name = "supervision-dense-check"
+version = "0.1.0"
+description = "Reproducible dense-scene evaluation limits in Supervision"
+requires-python = ">=3.14"
+dependencies = ["numpy==2.5.3", "pillow==12.3.0", "scipy==1.18.1", "pycocotools==2.0.11"]
+
+[project.optional-dependencies]
+before = ["supervision==0.30.9"]
+after = ["supervision==0.31.0.dev0"]
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff==0.17.0"]
+
+[tool.uv]
+conflicts = [[{ extra = "before" }, { extra = "after" }]]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+no-lines-before = ["standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.uv.sources]
+supervision = [{ git = "https://github.com/cdeil/supervision", rev = "23343ef871a9c89aba0c9df02a318ea8e5429f38", extra = "after" }]
